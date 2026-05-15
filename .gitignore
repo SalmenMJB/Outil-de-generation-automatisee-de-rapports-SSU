@@ -13,16 +13,16 @@ env/
 *.swo
 
 # PyInstaller
-# build/
-# dist/
-# *.spec
+build/
+dist/
+*.spec
 
 output/charts/*.png
 output/*.pdf
 output/*.docx
 
-data/raw/*.xlsx
-data/processed/*.xlsx
+# data/raw/*.xlsx
+# data/processed/*.xlsx
 
 .DS_Store
 Thumbs.db

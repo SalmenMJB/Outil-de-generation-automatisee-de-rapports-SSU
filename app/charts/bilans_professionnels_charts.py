@@ -29,8 +29,7 @@ def plot_bilans_medecins_vs_infirmieres(indicators):
     plt.title("Bilans de prévention : médecins vs infirmières", pad=20, fontweight='bold', fontsize=15)
     plt.ylabel("Nombre de bilans")
     
-    # Style premium
-    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['top'].set_visible(False) # gca() = get current axes, set_visible(False) = cache le cadre supérieur et droit
     plt.gca().spines['right'].set_visible(False)
     
     plt.tight_layout()

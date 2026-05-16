@@ -5,7 +5,7 @@ from app.config.colors import SSU_PALETTE
 
 def plot_etablissements_conventionnes(df):
     labels = df["etablissement"]
-    labels = labels.replace("Institut agro Rennes Angers", "Institut Agro Rennes Angers")
+    labels = labels.replace("Institut agro Rennes Angers", "Institut Agro Rennes Angers") # demandé par le SSU
 
     derniere_annee = df.iloc[:, -1].name
     somme = df[derniere_annee].sum()
@@ -15,7 +15,7 @@ def plot_etablissements_conventionnes(df):
         pourcentages.append(round(calcul,2))
 
     fig, ax = plt.subplots(figsize=(9, 7))
-
+ 
     couleurs = SSU_PALETTE
 
     wedges, _ = ax.pie(

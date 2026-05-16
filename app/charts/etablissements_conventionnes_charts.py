@@ -7,8 +7,9 @@ def plot_etablissements_conventionnes(df):
     labels = df["etablissement"]
     labels = labels.replace("Institut agro Rennes Angers", "Institut Agro Rennes Angers") # demandé par le SSU
 
-    derniere_annee = df.iloc[:, -1].name
-    somme = df[derniere_annee].sum()
+    derniere_annee = df.iloc[:, -1].name # nom de la dernière colonne
+    somme = df[derniere_annee].fillna(0).sum()
+
     pourcentages = []
     for val in df[derniere_annee]:
         calcul = (val/somme)*100
@@ -18,7 +19,7 @@ def plot_etablissements_conventionnes(df):
  
     couleurs = SSU_PALETTE
 
-    wedges, _ = ax.pie(
+    wedges, _ = ax.pie( # wedges: tranches, _: on ignore les légendes de pie()
         pourcentages,
         colors=couleurs,
         startangle=85, # pour une orientation proche de la photo
@@ -26,9 +27,10 @@ def plot_etablissements_conventionnes(df):
         wedgeprops=dict(edgecolor="white", linewidth=1.2)
     )
 
-    ax.set(aspect="equal")
+    ax.set(aspect="equal") # pour que le camembert soit un cercle et non une ellipse
 
-    for wedge, cat, pct in zip(wedges, labels, pourcentages):
+    # annotation des tranches avec leur pourcentage
+    for wedge, cat, pct in zip(wedges, labels, pourcentages): 
         angle = (wedge.theta2 + wedge.theta1) / 2
         x = np.cos(np.deg2rad(angle))
         y = np.sin(np.deg2rad(angle))
@@ -46,14 +48,14 @@ def plot_etablissements_conventionnes(df):
             ha=ha,
             va="center",
             fontsize=12,
-            bbox=dict(boxstyle="square,pad=0.35", fc="white", ec="#bfbfbf", lw=1),
-            arrowprops=dict(arrowstyle="-", color="#9e9e9e", lw=1.2, shrinkA=0, shrinkB=0)
+            bbox=dict(boxstyle="square,pad=0.35", fc="white", ec="#bfbfbf", lw=1), # boîte blanche autour du texte
+            arrowprops=dict(arrowstyle="-", color="#9e9e9e", lw=1.2, shrinkA=0, shrinkB=0) # flèche entre la tranche et l'annotation
         )
     plt.title("Effectifs étudiants par établissement conventionné", pad=25, fontweight='bold', fontsize=15)
     for spine in ax.spines.values():
         spine.set_visible(True)
         spine.set_edgecolor("#d9d9d9")
-        spine.set_linewidth(1)
+        spine.set_linewidth(1.2)
 
     plt.tight_layout()
 

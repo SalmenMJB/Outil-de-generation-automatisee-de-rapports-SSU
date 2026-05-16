@@ -23,7 +23,7 @@ def compute_stat_activite_indicators(df):
         motif = standardize_simple_labels(df["motif"])
         motif_counts = motif.value_counts(dropna=False)
 
-        indicators["top_motifs"] = motif_counts.head(10)
+        indicators["top_motifs"] = motif_counts.head(10) 
 
         indicators["consultations_medecine_generale"] = motif_counts.get("Consultations médecine générale", 0)
         indicators["consultations_psychologie"] = motif_counts.get("Psychologie", 0)
@@ -76,25 +76,24 @@ def compute_effectifs_indicators(df):
         indicators[f"total_{col}"] = df[col].fillna(0).sum()
 
     # garde uniquement les colonnes d'années qui contiennent au moins une vraie valeur numérique
-    valid_year_cols = [
-        col for col in year_cols if pd.to_numeric(df[col], errors="coerce").notna().sum() > 0
-    ]
+    valid_year_cols = [col for col in year_cols if pd.to_numeric(df[col], errors="coerce").notna().sum() > 0] 
 
     if valid_year_cols:
         # on vise l'année la plus récente 
-        latest_year = valid_year_cols[-1]
+        latest_year = valid_year_cols[-1] # colonne à rajouter chaque année par le SSU 
 
         # on convertit la colonne en numérique
         df[latest_year] = pd.to_numeric(df[latest_year], errors="coerce")
 
         # on enregistre les 5 etablissements avec le plus grand effectif sur la dernière année
-        indicators["top_etablissement"] = df[["etablissement", latest_year]].dropna(subset=[latest_year]).sort_values(by=latest_year, ascending=False).head(5) # .dropna(subset=[latest_year]) supprime les lignes ou le nombre d'effectif est NaN 
+        indicators["top_etablissement"] = df[["etablissement", latest_year]]\
+            .dropna(subset=[latest_year]).sort_values(by=latest_year, ascending=False).head(5) # supprimer les lignes ou le nombre d'effectif est NaN
 
         # pour debug - memoriser quelle année a été utilisée comme dernière année
         indicators["latest_year_used"] = latest_year
 
     return indicators
-
+ 
 
 
 def compute_stats_standard_indicators(df):
@@ -265,6 +264,7 @@ def compute_css_indicators(df):
         indicators["css_par_sexe"] = sexe.value_counts()
 
     return indicators
+    
 
 def extract_nom_intervenant(value):
     """Extrait le nom de famille en majuscule à partir d'un nom complet"""
@@ -280,7 +280,7 @@ def extract_nom_intervenant(value):
 def compute_bilans_professionnels_indicators(df, medecins, infirmieres):
     indicators = {}
 
-    # garder uniquement les BILANS DE PREVENTION
+    # garder uniquement les consultations de motif = BILANS DE PREVENTION
     df_bilans = df[df["motif"] == "Bilan de prévention"].copy()
 
     indicators["total_bilans"] = len(df_bilans) # nb lignes = nb bilans
@@ -290,8 +290,8 @@ def compute_bilans_professionnels_indicators(df, medecins, infirmieres):
         df_bilans["intervenant_clean"] = standardize_simple_labels(df_bilans["intervenant"]) # ajouter une nouvelle colonne + appliquer la fonction de nettoyage
         df_bilans["nom_intervenant"] = df_bilans["intervenant_clean"].apply(extract_nom_intervenant) # ajouter une nouvelle colonne + appliquer la fonction d'extraction
 
-        medecins_nom = [extract_nom_intervenant(x) for x in medecins]
-        infirmieres_nom = [extract_nom_intervenant(x) for x in infirmieres]
+        medecins_nom = [extract_nom_intervenant(x) for x in medecins] # liste des NOMS DE FAMILLE de medecins
+        infirmieres_nom = [extract_nom_intervenant(x) for x in infirmieres] # liste des NOMS DE FAMILLE de infirmieres
 
         df_med = df_bilans[df_bilans["nom_intervenant"].isin(medecins_nom)]
         df_inf = df_bilans[df_bilans["nom_intervenant"].isin(infirmieres_nom)]

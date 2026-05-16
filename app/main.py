@@ -121,7 +121,7 @@ def main():
     df_effectifs = parse_effectifs_file(effectifs_path)
     # print(df_effectifs.head())
     effectifs_stats = compute_effectifs_indicators(df_effectifs)
-    print_indicators(effectifs_stats)
+    print_indicators(effectifs_stats) 
 
 
     print_section("STATS STANDARD")

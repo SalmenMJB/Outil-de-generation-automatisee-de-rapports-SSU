@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 
 
 def plot_bilans_medecins_vs_infirmieres(indicators):
-    data = { # c'est un map (tableau associatif) => get renvoie l'elt voulu
-        "Médecins": indicators.get("bilans_medecins", 0),
+    data = { 
+        "Médecins": indicators.get("bilans_medecins", 0), # 0: si jamais la colonne n'est pas trouvée (au cas ou) => éviter les erreurs de NaN
         "Infirmières": indicators.get("bilans_infirmieres", 0),
         "Autres": indicators.get("bilans_autres_intervenants", 0)
     }
 
-    labels = list(data.keys())
-    values = list(data.values())
+    labels = data.keys()
+    values = data.values()
 
     plt.figure(figsize=(8,5))
     bars = plt.bar(labels, values, color="#212E53")

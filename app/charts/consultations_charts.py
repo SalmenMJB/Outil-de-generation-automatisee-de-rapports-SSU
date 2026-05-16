@@ -6,7 +6,7 @@ from app.config.colors import SSU_PALETTE
 def plot_recap_consultations(activite_stats):
     motif_counts = activite_stats["top_motifs"]
 
-    # mapping
+    # mapping (le SSU demandait de regrouper les motifs comme suit)
     data = {
         "Médecine générale": motif_counts.get("Consultations médecine générale", 0),
         "Psychologie": motif_counts.get("Psychologie", 0),
@@ -17,25 +17,25 @@ def plot_recap_consultations(activite_stats):
     }
 
     # enlever les 0
-    data = {k: v for k, v in data.items() if v > 0}
+    data = {k:v for k, v in data.items() if v > 0} # itérer sur les paires clé:valeur
 
-    labels = list(data.keys())
-    values = list(data.values())
+    labels = data.keys()
+    values = data.values()
 
     os.makedirs("output/charts", exist_ok=True)
 
     plt.figure(figsize=(7, 7))
 
-    def autopct_format(values):
-        def inner(pct):
+    def autopct_format(values): # fonction qui permet d'afficher le nombre de consultations sur chaque part du graphique
+        def inner(pct): # pct = pourcentage de la part
             total = sum(values)
-            val = int(round(pct * total / 100.0))
+            val = int(round(pct * total / 100))
             return f"{val}"
         return inner
 
     if len(values) > 0:
         plt.pie(
-            values,
+            values, # finalement on a gardé les valeurs pas les pourcentages
             labels=labels,
             autopct=autopct_format(values),
             colors=SSU_PALETTE

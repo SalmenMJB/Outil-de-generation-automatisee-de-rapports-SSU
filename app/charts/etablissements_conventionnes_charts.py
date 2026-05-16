@@ -24,7 +24,7 @@ def plot_etablissements_conventionnes(df):
         colors=couleurs,
         startangle=85, # pour une orientation proche de la photo
         counterclock=False,
-        wedgeprops=dict(edgecolor="white", linewidth=1.2)
+        wedgeprops=dict(edgecolor="white", linewidth=1.2) # bordure blanche entre les tranches
     )
 
     ax.set(aspect="equal") # pour que le camembert soit un cercle et non une ellipse

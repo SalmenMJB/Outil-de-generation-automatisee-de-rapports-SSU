@@ -1,24 +1,24 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import re
 from app.config.colors import SSU_PALETTE
 
-import re
 
 def plot_pssm_sessions(indicators):
-    data_civile = indicators.get("sessions_annee_civile", pd.Series())
+    data_civile = indicators.get("sessions_annee_civile", pd.Series()) # pd.Series() permet de ne pas avoir d'erreur si les données ne sont pas trouvées
     data_univ = indicators.get("sessions_annee_univ", pd.Series())
 
-    def extract_year(name):
-        match = re.search(r'\d{4}', str(name))
-        return int(match.group()) if match else 0
+    def extract_year(name): # fonction qui permet d'extraire l'année de la colonne (ex: 2025/2026 -> 2025)
+        match = re.search(r'\d{4}', str(name)) # permet d'extraire l'année de la colonne
+        return int(match.group()) if match else 0 
 
     if not data_civile.empty:
-        data_civile = data_civile.loc[sorted(data_civile.index, key=extract_year)].tail(4)
+        data_civile = data_civile.loc[sorted(data_civile.index, key=extract_year)].tail(4) # trier par année et garder les 4 dernières
         
     if not data_univ.empty:
-        data_univ = data_univ.loc[sorted(data_univ.index, key=extract_year)].tail(4)
+        data_univ = data_univ.loc[sorted(data_univ.index, key=extract_year)].tail(4) # trier par année et garder les 4 dernières
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5)) # création de deux sous-graphiques
 
     # Sous-graphique 1 : Années civiles
     if not data_civile.empty:
@@ -38,8 +38,8 @@ def plot_pssm_sessions(indicators):
         ax1.set_title("Sessions PSSM par année civile", pad=15, fontweight='bold', fontsize=15)
         ax1.set_xlabel("Année civile")
         ax1.set_ylabel("Nombre de sessions")
-        ax1.tick_params(axis='x', rotation=45)
-        ax1.spines['top'].set_visible(False)
+        ax1.tick_params(axis='x', rotation=45) 
+        ax1.spines['top'].set_visible(False) # cache le cadre supérieur et droit
         ax1.spines['right'].set_visible(False)
 
     # Sous-graphique 2 : Années universitaires
@@ -61,7 +61,7 @@ def plot_pssm_sessions(indicators):
         ax2.set_xlabel("Année universitaire")
         ax2.set_ylabel("Nombre de sessions")
         ax2.tick_params(axis='x', rotation=45)
-        ax2.spines['top'].set_visible(False)
+        ax2.spines['top'].set_visible(False) # cache le cadre supérieur et droit
         ax2.spines['right'].set_visible(False)
 
     plt.tight_layout()
@@ -70,7 +70,7 @@ def plot_pssm_sessions(indicators):
 
 
 def plot_pssm_lastest_year(dfs):
-    data = dfs[list(dfs.keys())[-1]]
+    data = dfs[list(dfs.keys())[-1]] # permet de prendre les données de la dernière année
     pssm_etab = data["etab"].value_counts()
     
     rename_map = {
@@ -78,24 +78,18 @@ def plot_pssm_lastest_year(dfs):
         "UA" : "Étudiants Université d'Angers",
         "Institut agro" : "Institut Agro Rennes Angers"
     }
-    pssm_etab.index = pssm_etab.index.map(lambda x: rename_map.get(x, x))
+    pssm_etab.index = pssm_etab.index.map(lambda x: rename_map.get(x, x)) # permet de renommer les catégories, si x n'est pas dans rename_map, on garde x
     labels = pssm_etab.index.astype(str)
     values = pssm_etab.values
 
     plt.figure(figsize=(7, 6))
 
-    def autopct_format(values):
-        def inner(pct):
-            total = sum(values)
-            val = int(round(pct * total / 100.0))
-            return f"{pct:.1f}%"
-        return inner
 
     plt.pie(
         values,
         labels=labels,
-        autopct=autopct_format(values),
         startangle=90,
+        autopct='%.1f%%',
         colors=SSU_PALETTE[:len(values)]
     )
 

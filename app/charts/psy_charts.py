@@ -8,23 +8,26 @@ from app.config.colors import SSU_PALETTE
 def plot_delai_attente_psy(excel_path):
     df = pd.read_excel(excel_path)
 
-    columns_names = df.columns.tolist()
+    columns_names = df.columns.tolist() 
  
     mois = df.iloc[:, 0].tolist()
-    valeurs = df.iloc[:, 1].tolist()
-    valeurs_n1 = df.iloc[:, 2].tolist()
-
+    valeurs = df.iloc[:, 1].tolist() # valeurs de l'année en cours
+    valeurs_n1 = df.iloc[:, 2].tolist() # valeurs de l'année N-1
+ 
     os.makedirs("output/charts", exist_ok=True)
 
     plt.figure(figsize=(9, 5))
-    plt.plot(mois, valeurs, marker="o", color=SSU_PALETTE[0], label=columns_names[1])
-
     offset = 0.5
+
+    # courbe de l'année en cours
+    plt.plot(mois, valeurs, marker="o", color=SSU_PALETTE[0], label=columns_names[1])
+    # annotation des points
     for x, y in zip(mois, valeurs):
         plt.text(x, y + offset, str(y), ha="center", fontsize=9)
 
-    
+    # courbe de l'année N-1
     plt.plot(mois, valeurs_n1, marker="x", linestyle="--", color=SSU_PALETTE[2], label=columns_names[2])
+    # annotation des points
     for x, y in zip(mois, valeurs_n1):
         if pd.notna(y):
             plt.text(x, y - offset - 0.5, str(int(y)), ha="center", fontsize=9, color="black")
@@ -35,7 +38,6 @@ def plot_delai_attente_psy(excel_path):
     plt.xticks(rotation=30)
     plt.legend()
     
-    # Style premium
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     
@@ -64,15 +66,15 @@ def plot_problematique_psy(df):
 
     plt.figure(figsize=(9, 6))
 
-    wedges, texts, autotexts = plt.pie(
+    wedges, texts, autotexts = plt.pie( # wedges: parts du graphique, texts: labels des parts, autotexts: légendes internes
         values,
         labels=labels,
         autopct="%1.1f%%",
         startangle=90,
-        wedgeprops=dict(width=0.4),
-        labeldistance=1.12,
-        pctdistance=0.8,
-        colors=SSU_PALETTE
+        wedgeprops=dict(width=0.4), # largeur du graphique
+        labeldistance=1.12, # distance entre les labels et les parts
+        pctdistance=0.8, # distance entre les légendes internes et les parts
+        colors=SSU_PALETTE # couleurs des parts
     )
 
     plt.title("Motifs de consultations en psychologie", pad=20, fontweight='bold', fontsize=15)
@@ -81,7 +83,7 @@ def plot_problematique_psy(df):
     plt.close()
 
 
-def plot_duree_suivi(df):
+def plot_duree_suivi(df): # celui-ci se base sur le df stat_activite et non sur le df psy
     # filtrer uniquement les consultations psy
     df_psy = df[df["motif"] == "Psychologie"]
 
@@ -118,7 +120,6 @@ def plot_duree_suivi(df):
     plt.xlabel("Nombre de consultations")
     plt.ylabel("Pourcentage d'étudiants")
     
-    # Style premium
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     

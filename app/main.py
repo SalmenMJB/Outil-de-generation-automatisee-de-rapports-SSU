@@ -166,8 +166,8 @@ def main():
     print_section("STATS Motifs Psy")
     psy_path = "data/raw/stats_psy.xlsx"
     df_psy = parse_psy_file(psy_path)
-    # print(df_psy.head())
-    # print(df_psy.columns.tolist())
+    print(df_psy.head())
+    print(df_psy.columns.tolist())
     psy_stats = compute_psy_indicators(df_psy)
     print_indicators(psy_stats)
     

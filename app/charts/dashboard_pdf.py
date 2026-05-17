@@ -1,19 +1,13 @@
 """
 Générateur de Tableau de Bord PDF — SSU Université d'Angers
 ============================================================
-Produit un PDF de 4 pages synthétisant le rapport d'activité annuel.
-Utilise uniquement matplotlib (aucune dépendance supplémentaire).
-
-Pages :
-  1. Vue d'ensemble & Démographie
-  2. Suivi Médical & Aménagements
-  3. Santé Mentale & Santé Sexuelle
-  4. Prévention & Actions sur les campus
+Produit un PDF de 5 pages synthétisant le rapport d'activité annuel.
+On a utilisé uniquement matplotlib (aucune dépendance supplémentaire).
 """
 
 import os
 import matplotlib
-matplotlib.use("Agg")  # backend non-interactif
+matplotlib.use("Agg") # backend non-interactif
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg

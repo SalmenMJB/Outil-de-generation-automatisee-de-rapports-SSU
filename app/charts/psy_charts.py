@@ -88,23 +88,25 @@ def plot_duree_suivi(df): # celui-ci se base sur le df stat_activite et non sur 
     df_psy = df[df["motif"] == "Psychologie"]
 
     # nb consultations par étudiant
-    suivi = df_psy.groupby("id_etu").size()
+    suivi = df_psy.groupby("id_etu").size() # size() : calcule le nb d'occurrences pour chaque groupe (ici pour chaque id_etu)
 
     # catégorisation
-    bins = [1, 3, 6, 9, 13, float("inf")]
+    bins = [1, 3, 6, 9, 13, float("inf")] # bornes 
     labels = ["1-3", "4-6", "7-9", "10-13", ">13"]
 
-    categories = pd.cut(suivi, bins=bins, labels=labels, right=True)
+    categories = pd.cut(suivi, bins=bins, labels=labels, right=True) # divise les données en catégories selon les bornes définies
 
-    repartition = categories.value_counts().sort_index()
+    repartition = categories.value_counts().sort_index() 
 
     # en %
-    repartition_pct = (repartition / repartition.sum()) * 100
+    repartition_pct = (repartition / repartition.sum()) * 100 
 
     os.makedirs("output/charts", exist_ok=True)
 
     plt.figure(figsize=(8, 5))
-    bars = plt.bar(repartition.index.astype(str), repartition_pct.values, color=SSU_PALETTE[4])
+    bars = plt.bar(repartition.index.astype(str),  # catégories (1-3, 4-6, etc.)
+                    repartition_pct.values, # valeurs en %
+                    color=SSU_PALETTE[4])
 
     # valeurs au-dessus
     for bar in bars:
@@ -128,7 +130,7 @@ def plot_duree_suivi(df): # celui-ci se base sur le df stat_activite et non sur 
     plt.close()
 
 
-def plot_consultations_psy_par_composante(df):
+def plot_consultations_psy_par_composante(df): # df du fichier stat_psy
     if "composante" not in df.columns:
         return
 
@@ -164,7 +166,6 @@ def plot_consultations_psy_par_composante(df):
     plt.title("Consultations psychologiques par composante", pad=20, fontweight='bold', fontsize=15)
     plt.xlabel("Nombre de consultations")
     
-    # Style premium
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     

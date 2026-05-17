@@ -32,7 +32,6 @@ def plot_consultations_par_centre(activite_stats):
     plt.ylabel("Nombre de consultations")
     plt.xticks(rotation=20, ha="right")
     
-    # Style premium
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     
@@ -97,7 +96,6 @@ def plot_top_motifs(activite_stats, activite_stats_n_1=None):
     plt.xlabel("Motif")
     plt.ylabel("Nombre de consultations")
     
-    # Style premium
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     

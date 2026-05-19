@@ -134,6 +134,7 @@ def _page1_overview(pdf, data, charts_dir, year_label):
     _add_logo_header(fig, year_label)
     _add_footer(fig, 1)
 
+    # Extraction des données
     act = data.get("activite", {})
     prev = data.get("prevention", {})
     pssm = data.get("sante_mentale", {}).get("pssm", {})
@@ -150,7 +151,7 @@ def _page1_overview(pdf, data, charts_dir, year_label):
         (pssm.get("nombre_sessions"), "Sessions\nPSSM", PURPLE),
         (css.get("total_consultations_css"), "Consultations\nCSS", ROSE),
     ]
-
+  
     for i, (val, label, color) in enumerate(kpis):
         ax = fig.add_axes([0.04 + (i % 3) * 0.32, 0.715 - (i // 3) * 0.14, 0.28, 0.13])
         _draw_kpi_card(ax, val, label, color)
@@ -158,7 +159,8 @@ def _page1_overview(pdf, data, charts_dir, year_label):
     # Section : Répartition des consultations
     _section_title(fig, 0.55, "RÉPARTITION PAR TYPE DE CONSULTATION", "---")
 
-    ax_motifs = fig.add_axes([0.06, 0.29, 0.42, 0.23])
+    # Graphique : Top motifs de consultation
+    ax_motifs = fig.add_axes([0.06, 0.29, 0.42, 0.23]) # 0.06 : distance par rapport au bord gauche | 0.29 : distance par rapport au bord bas | 0.42 : largeur | 0.23 : hauteur 
     _embed_chart_image(ax_motifs, os.path.join(charts_dir, "top_motifs.png"),
                        "Top motifs de consultation")
 
@@ -178,7 +180,7 @@ def _page1_overview(pdf, data, charts_dir, year_label):
     _embed_chart_image(ax_etab, os.path.join(charts_dir, "etablissements_conventionnes.png"),
                        "Principaux établissements")
 
-    pdf.savefig(fig, facecolor=fig.get_facecolor(), dpi=500)
+    pdf.savefig(fig, facecolor=fig.get_facecolor(), dpi=500) # on enregistre la figure dans le pdf
     plt.close(fig)
 
 
@@ -189,24 +191,25 @@ def _page2_medical(pdf, data, charts_dir, year_label):
     _add_logo_header(fig, year_label)
     _add_footer(fig, 2)
 
+    # extraction des données
     act = data.get("activite", {})
     bilans = data.get("bilans_prevention", {})
 
     # Section : Activité médicale
     _section_title(fig, 0.88, "ACTIVITÉ MÉDICALE", "---")
 
-    med_kpis = [
+    med_kpis = [ # création d'une liste de tuples (valeur, label, couleur) pour les KPI 
         (act.get("consultations_medecine_generale"), "Médecine\ngénérale", UA_BLUE),
         (bilans.get("bilans_medecins"), "Bilans par\nmédecins", GREEN),
         (bilans.get("bilans_infirmieres"), "Bilans par\ninfirmières", ORANGE),
     ]
 
-    for i, (val, label, color) in enumerate(med_kpis):
-        ax = fig.add_axes([0.04 + i * 0.235, 0.75, 0.21, 0.10])
-        _draw_kpi_card(ax, val, label, color)
+    for i, (val, label, color) in enumerate(med_kpis): # on crée les KPI
+        ax = fig.add_axes([0.04 + i * 0.235, 0.75, 0.21, 0.10])  # on définit les axes pour chaque KPI
+        _draw_kpi_card(ax, val, label, color) # on dessine chaque KPI
 
     # Graphiques
-    ax1 = fig.add_axes([0.06, 0.49, 0.42, 0.22])
+    ax1 = fig.add_axes([0.06, 0.49, 0.42, 0.22]) 
     _embed_chart_image(ax1, os.path.join(charts_dir, "motifs_medecine_generale.png"),
                        "Récapitulatif des consultations")
 
@@ -239,12 +242,12 @@ def _page2_medical(pdf, data, charts_dir, year_label):
 
 def _page3_mental(pdf, data, charts_dir, year_label):
     """Page 3 : Santé Mentale & PSSM"""
-    fig = plt.figure(figsize=(8.27, 11.69))
-    fig.set_facecolor(GREY_BG)
-    _add_logo_header(fig, year_label)
-    _add_footer(fig, 3)
+    fig = plt.figure(figsize=(8.27, 11.69)) # création d'une nouvelle figure pour la page 3
+    fig.set_facecolor(GREY_BG) 
+    _add_logo_header(fig, year_label) 
+    _add_footer(fig, 3) 
 
-    act = data.get("activite", {})
+    act = data.get("activite", {}) # extraction des données
     pssm = data.get("sante_mentale", {}).get("pssm", {})
 
     # Section : Santé Mentale
@@ -257,7 +260,7 @@ def _page3_mental(pdf, data, charts_dir, year_label):
 
     for i, (val, label, color) in enumerate(mental_kpis):
         ax = fig.add_axes([0.04 + i * 0.235, 0.75, 0.21, 0.10])
-        _draw_kpi_card(ax, val, label, color)
+        _draw_kpi_card(ax, val, label, color) # on crée les KPI
 
     ax1 = fig.add_axes([0.06, 0.51, 0.42, 0.20])
     _embed_chart_image(ax1, os.path.join(charts_dir, "evolution_psychiatrie.png"),
@@ -287,7 +290,7 @@ def _page3_mental(pdf, data, charts_dir, year_label):
     _embed_chart_image(ax4, os.path.join(charts_dir, "pssm_origine_stagiaires.png"),
                        "Origine des stagiaires")
     
-    pdf.savefig(fig, facecolor=fig.get_facecolor(), dpi=500)
+    pdf.savefig(fig, facecolor=fig.get_facecolor(), dpi=500) # on enregistre la figure dans le pdf
     plt.close(fig)
     
 
@@ -307,7 +310,7 @@ def _page4_IDE_CSS(pdf, data, charts_dir, year_label):
         (act.get("consultations_ide"), "Consultations\nIDE", UA_CYAN),
     ]
 
-    for i, (val, label, color) in enumerate(ide_kpis):
+    for i, (val, label, color) in enumerate(ide_kpis): # on crée les KPI
         ax = fig.add_axes([0.04 + i * 0.235, 0.75, 0.21, 0.10])
         _draw_kpi_card(ax, val, label, color)
 
@@ -323,18 +326,18 @@ def _page4_IDE_CSS(pdf, data, charts_dir, year_label):
     # Section : Santé Sexuelle
     _section_title(fig, 0.47, "CENTRE DE SANTÉ SEXUELLE (CSS)", "---")
 
-    css_kpis = [
+    css_kpis = [ # création des KPI pour le centre de santé sexuelle
         (css.get("total_consultations_css"), "Consultations\nCSS", PURPLE),
         (css.get("motifs_reels_css", {}).get("contraception", 0), "Contraception", ROSE),
         (css.get("motifs_reels_css", {}).get("Dépistage IST", 0), "Dépistage\nIST", TEAL),
     ]
 
-    for i, (val, label, color) in enumerate(css_kpis):
-        ax = fig.add_axes([0.04 + i * 0.32, 0.34, 0.28, 0.10])
-        _draw_kpi_card(ax, val, label, color)
+    for i, (val, label, color) in enumerate(css_kpis): # on crée les KPI
+        ax = fig.add_axes([0.04 + i * 0.32, 0.34, 0.28, 0.10]) # on définit les axes pour chaque KPI
+        _draw_kpi_card(ax, val, label, color) # on dessine chaque KPI
 
-    ax3 = fig.add_axes([0.06, 0.11, 0.42, 0.20])
-    _embed_chart_image(ax3, os.path.join(charts_dir, "motifs_reels_css.png"),
+    ax3 = fig.add_axes([0.06, 0.11, 0.42, 0.20]) # on définit les axes pour le graphique
+    _embed_chart_image(ax3, os.path.join(charts_dir, "motifs_reels_css.png"), # on ajoute le graphique
                        "Motifs de consultation CSS")
 
     ax4 = fig.add_axes([0.52, 0.11, 0.42, 0.20])
@@ -346,12 +349,12 @@ def _page4_IDE_CSS(pdf, data, charts_dir, year_label):
 
 def _page5_prevention(pdf, data, charts_dir, year_label):
     """Page 5 : Prévention & Actions sur les campus"""
-    fig = plt.figure(figsize=(8.27, 11.69))
-    fig.set_facecolor(GREY_BG)
-    _add_logo_header(fig, year_label)
-    _add_footer(fig, 5)
+    fig = plt.figure(figsize=(8.27, 11.69)) # création d'une nouvelle figure pour la page 5
+    fig.set_facecolor(GREY_BG) # on définit la couleur de fond de la figure
+    _add_logo_header(fig, year_label) # on ajoute le logo de l'Université d'Abomey-Calavi
+    _add_footer(fig, 5) # on ajoute le numéro de la page
 
-    prev = data.get("prevention", {})
+    prev = data.get("prevention", {}) # extraction des données
     stats = data.get("stats_standard", {})
 
     # Section : Prévention
@@ -363,12 +366,12 @@ def _page5_prevention(pdf, data, charts_dir, year_label):
         (stats.get("total_appels_latest_year"), "Appels\ntéléphoniques", UA_BLUE),
     ]
 
-    for i, (val, label, color) in enumerate(prev_kpis):
-        ax = fig.add_axes([0.04 + i * 0.32, 0.75, 0.28, 0.10])
-        _draw_kpi_card(ax, val, label, color)
+    for i, (val, label, color) in enumerate(prev_kpis): # on crée les KPI
+        ax = fig.add_axes([0.04 + i * 0.32, 0.75, 0.28, 0.10]) # on définit les axes pour chaque KPI
+        _draw_kpi_card(ax, val, label, color) # on dessine chaque KPI
 
     # Graphiques
-    ax1 = fig.add_axes([0.06, 0.50, 0.42, 0.21])
+    ax1 = fig.add_axes([0.06, 0.50, 0.42, 0.21]) # on définit les axes pour le graphique
     _embed_chart_image(ax1, os.path.join(charts_dir, "actions_par_theme.png"),
                        "Actions par thématique")
 
@@ -384,27 +387,22 @@ def _page5_prevention(pdf, data, charts_dir, year_label):
     _embed_chart_image(ax3, os.path.join(charts_dir, "consommables_bilans_actions.png"),
                        "")
 
-    pdf.savefig(fig, facecolor=fig.get_facecolor(), dpi=500)
+    pdf.savefig(fig, facecolor=fig.get_facecolor(), dpi=500) # on enregistre la figure dans le pdf
     plt.close(fig)
 
 
-# ── Point d'entrée public ────────────────────────────────────
 
-def generate_dashboard_pdf(data: dict, charts_dir: str = "output/charts",
-                           output_path: str = "output/tableau_de_bord_ssu.pdf",
-                           year_label: str = "2025 – 2026"):
+# Point d'entrée public 
+def generate_dashboard_pdf(data: dict, # dictionnaire contenant tous les indicateurs calculés (à passer dans le main et report_generator)
+                           charts_dir: str = "output/charts", # chemin vers le dossier contenant les graphiques PNG
+                           output_path: str = "output/tableau_de_bord_ssu.pdf", # chemin du fichier PDF de sortie
+                           year_label: str = "2025 – 2026"): # est calculé automatiquement dans le main
     """
     Génère le tableau de bord PDF de 5 pages.
-
-    Args:
-        data: Dictionnaire contenant tous les indicateurs calculés (même structure que dashboard_data.json).
-        charts_dir: Chemin vers le dossier contenant les graphiques PNG.
-        output_path: Chemin du fichier PDF de sortie.
-        year_label: Libellé de l'année universitaire.
     """
-    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True) # ça recrée le dossier output
 
-    with PdfPages(output_path) as pdf:
+    with PdfPages(output_path) as pdf: # on utilise la bibliotheque PyPDF2 pour créer le pdf
         _page1_overview(pdf, data, charts_dir, year_label)
         _page2_medical(pdf, data, charts_dir, year_label)
         _page3_mental(pdf, data, charts_dir, year_label)

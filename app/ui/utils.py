@@ -3,7 +3,7 @@ import sys
 import subprocess
 import platform
 
-##### Ouverture de fichier
+##### Ouverture de fichier 
 def open_file_with_default_app(filepath: str):
     """Ouvre un fichier avec l'application par défaut du système d'exploitation."""
     if not os.path.exists(filepath):
@@ -123,4 +123,4 @@ def ensure_output_dirs():
         os.path.join(root, "output", "charts"),
     ]
     for d in dirs:
-        os.makedirs(d, exist_ok=True)
+        os.makedirs(d, exist_ok=True) 

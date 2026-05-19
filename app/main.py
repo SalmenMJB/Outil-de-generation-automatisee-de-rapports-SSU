@@ -309,10 +309,10 @@ def main():
 
 
     # Génération du tableau de bord PDF (version compacte du rapport)
-    dashboard_data = {
+    dashboard_data = { # les données à passer à dashboard_pdf.py
         "demographie": {
-            "effectifs": effectifs_stats,
-            "etablissements": df_effectifs.to_dict(orient='records') if not df_effectifs.empty else []
+            "effectifs": effectifs_stats, 
+            "etablissements": df_effectifs.to_dict(orient='records') if not df_effectifs.empty else [] # convertir le dataframe en dictionnaire
         },
         "activite": activite_stats,
         "bilans_prevention": bilans_prof_stats,

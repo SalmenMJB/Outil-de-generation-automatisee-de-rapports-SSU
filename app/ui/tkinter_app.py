@@ -17,8 +17,7 @@ except ImportError:
 class SSUReportApp:
     """
     Classe principale de l'application Tkinter.
-    Gère toute l'interface graphique et la communication avec le module
-    de génération de rapport (report_builder).
+    Gère toute l'interface graphique et la communication avec le module de génération de rapport (report_builder).
     """
     # couleurs
     COLOR_CYAN       = "#00A9CE"   
@@ -55,7 +54,7 @@ class SSUReportApp:
 
     def __init__(self, root):
         """
-        Initialise l'application avec la fenêtre root fournie.
+        Constructeur: Initialise l'application avec la fenêtre root fournie.
         """
         self.root = root
         self.root.title("Générateur de Rapport SSU – Université d'Angers")
@@ -76,7 +75,7 @@ class SSUReportApp:
         self.output_dir_var = tk.StringVar(value="output")
 
         # Progression de la génération (0 à 100) — lié à la ProgressBar
-        self.progress_var = tk.IntVar(value=0)
+        self.progress_var = tk.IntVar(value=0) 
 
         # Message d'état affiché sous la barre de progression
         self.status_var = tk.StringVar(value="Prêt à générer le rapport.")
@@ -128,7 +127,7 @@ class SSUReportApp:
             font=("Calibri", 20, "bold"),
             fg=self.COLOR_WHITE,
             bg=self.COLOR_CYAN
-        ).pack()
+        ).pack() # pack: ajoute le widget dans la fenêtre
 
         tk.Label(
             frame_header,
@@ -219,7 +218,7 @@ class SSUReportApp:
 
         # Barre de progression "déterministe" (montre un % réel)
         # Variable liée : self.progress_var (IntVar, 0-100)
-        self.progress_bar = ttk.Progressbar(
+        self.progress_bar = ttk.Progressbar( # Progressbar est un widget de ttk
             frame_body,
             variable=self.progress_var,
             maximum=100,
@@ -235,7 +234,7 @@ class SSUReportApp:
             font=("Calibri", 10, "italic"),
             fg="#555555",
             bg=self.COLOR_WHITE,
-            anchor="w",
+            anchor="w", 
             wraplength=720   
         )
         self.status_label.pack(fill=tk.X, pady=(0, 8))
@@ -460,7 +459,7 @@ class SSUReportApp:
 
     def _run_generation(self):
         """
-        Exécutée dans un thread séparé.
+        Exécutée dans un thread séparé (permet de ne pas bloquer l'interface utilisateur pendant la génération)
         """
         try:
             from app.ui.utils import get_project_root
@@ -599,6 +598,7 @@ class SSUReportApp:
         open_file_with_default_app(self.last_dashboard_path)
 
 
+# Point d'entrée public pour lancer l'application Tkinter.
 def run_app():
     """
     Point d'entrée public pour lancer l'application Tkinter.

@@ -35,15 +35,12 @@ def _set_cell_background(cell, hex_color):
     
 
 ##### Création et configuration du document
-def create_document(template_path: str = None) -> Document:
+def create_document(template_path: str = None) -> Document: # Document : objet python-docx
     """
     Crée et configure un nouveau document Word.
-    Si template_path est fourni et le fichier existe, l'utilise comme base.
-    Returns:
-        Document : objet python-docx.
     """
     if template_path and os.path.exists(template_path):
-        doc = Document(template_path)
+        doc = Document(template_path) 
     else:
         doc = Document()
         # appliquer les marges sur toutes les sections du document
@@ -61,7 +58,6 @@ def add_title_page(doc: Document, title: str, subtitle: str="", year: str="", lo
     """
     Ajoute une page de titre avec logos en haut et titre au centre.
     """
-    
     # LOGOS ua et ssu en haut
     if logo_ssu_path and os.path.exists(logo_ssu_path):
         p_logo_ssu = doc.add_paragraph()
@@ -69,12 +65,12 @@ def add_title_page(doc: Document, title: str, subtitle: str="", year: str="", lo
         p_logo_ssu.paragraph_format.space_after = Pt(6)
         
         run_logo = p_logo_ssu.add_run()
-        run_logo.add_picture(logo_ssu_path, width=Inches(1.5))  # ← PETIT (1.5 inch)
+        run_logo.add_picture(logo_ssu_path, width=Inches(1.5))
     
     if logo_ua_path and os.path.exists(logo_ua_path):
         p_logo_ua = doc.add_paragraph()
         p_logo_ua.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_logo_ua.paragraph_format.space_after = Pt(24)  # espace avant le titre
+        p_logo_ua.paragraph_format.space_after = Pt(24)  
         
         run_logo_ua = p_logo_ua.add_run()
         run_logo_ua.add_picture(logo_ua_path, width=Inches(1.5))  # ← PETIT (1.5 inch)
@@ -115,7 +111,7 @@ def add_title_page(doc: Document, title: str, subtitle: str="", year: str="", lo
         run_year.font.color.rgb = RGBColor(80, 80, 80)
 
     # sauts de page
-    doc.add_page_break()
+    doc.add_page_break() # séparer la page de titre du reste du document
 
 ##### Table des matières
 def add_table_of_contents(doc: Document, sections: list):
@@ -141,7 +137,7 @@ def add_table_of_contents(doc: Document, sections: list):
 
         p = doc.add_paragraph()
         
-        # Ajout d'une tabulation avec des points de suite alignée à droite (à ~6 pouces, selon les marges)
+        # Ajout d'une tabulation avec des points de suite alignée à droite
         p.paragraph_format.tab_stops.add_tab_stop(Inches(6.0), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.DOTS)
         
         # Texte principal
@@ -312,7 +308,7 @@ def add_chart_from_file(doc: Document, image_path: str, caption: str = None, wid
         run.italic = True
         run.font.color.rgb = RGBColor(150, 150, 150)
         p.paragraph_format.space_after = Pt(6)
-        return # pour pas bloquer la génération du rapport
+        return # pour ne pas bloquer la génération du rapport
     
     # paragraphe centré pour l'image
     p = doc.add_paragraph()
@@ -337,11 +333,10 @@ def add_chart_from_file(doc: Document, image_path: str, caption: str = None, wid
         run_cap.font.color.rgb = RGBColor(100, 100, 100)
         
 
-    
 ##### Saut de page
 def add_page_break(doc: Document):
     """
-    Insère un saut de page dans le document: utilisé pour commencer chaque grabde section sur une nouvelle page
+    Insère un saut de page dans le document: utilisé pour commencer chaque grande section sur une nouvelle page
     """
     doc.add_page_break()
 

@@ -214,7 +214,7 @@ def compute_pssm_indicators(pssm_sheets):
 
     if not all_sheets_dfs:
         return indicators
-
+ 
     all_pssm = pd.concat(all_sheets_dfs, ignore_index=True)  # toutes les feuilles (dfs) concaténées
 
     # garder les lignes avec une vraie date/session (lignes vides)

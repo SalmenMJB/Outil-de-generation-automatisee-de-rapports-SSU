@@ -7,8 +7,8 @@ import pandas as pd
 warnings.filterwarnings(
     "ignore",
     message="Workbook contains no default style, apply openpyxl's default"
-)
-
+) 
+ 
 ##### Imports parsers fichiers excel
 from app.parsers.stat_activite import parse_stat_activite_file
 from app.parsers.effectifs import parse_effectifs_file
@@ -393,7 +393,7 @@ def generate_all_charts(data: dict, stats: dict):
     # if stats.get("bilans_prof"):
     #     _safe_plot(plot_bilans_medecins_vs_infirmieres, stats["bilans_prof"], "bilans_medecins_vs_infirmieres.png")
 
-    # graphiques psychiatrie
+    # Graphiques psychiatrie
     psychiatrie_path = "data/processed/evolution_activite_psychiatrie.xlsx"
     if os.path.exists(psychiatrie_path):
         _safe_plot(plot_evolution_psychiatrie, psychiatrie_path, "evolution_psychiatrie.png")
@@ -505,7 +505,7 @@ def build_synthese_generale(doc, stats: dict):
 
 def build_medecine_generale(doc, stats: dict, data: dict):
     """Construit la section "Médecine générale" du rapport"""
-    add_page_break(doc)
+    add_page_break(doc) # chaque section commence sur une nouvelle page
     add_section_heading(doc, "2. Médecine générale", level=1)
 
     add_paragraph_text(doc, "Le service de médecine générale du SSU assure les consultations courantes, "

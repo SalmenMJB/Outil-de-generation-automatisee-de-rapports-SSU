@@ -4,19 +4,20 @@ Générateur de Tableau de Bord PDF — SSU Université d'Angers
 Produit un PDF de 5 pages synthétisant le rapport d'activité annuel.
 On a utilisé uniquement matplotlib (aucune dépendance supplémentaire).
 """
-
+ 
 import os
 import matplotlib
 matplotlib.use("Agg") # backend non-interactif
 
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from matplotlib.backends.backend_pdf import PdfPages
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
-import matplotlib.patches as mpatches
-import numpy as np
+import matplotlib.pyplot as plt # pour les graphiques 
+import matplotlib.image as mpimg # pour importer les graphiques
+from matplotlib.backends.backend_pdf import PdfPages # pour créer le pdf
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox # pour les offsetbox
+import matplotlib.patches as mpatches # pour les patches
+import numpy as np # pour les calculs numériques
 
-# ── Couleurs UA ──────────────────────────────────────────────
+
+# Couleurs utilisés
 UA_BLUE       = "#004a8f"
 UA_BLUE_LIGHT = "#1a6fc4" 
 UA_CYAN       = "#00A9CE"
@@ -35,8 +36,8 @@ TEAL          = "#0fa3b1"
 BAR_COLORS = [UA_BLUE, UA_CYAN, GREEN, ORANGE, ROSE, PURPLE, TEAL,
               UA_BLUE_LIGHT, "#64748b", "#a855f7"]
 
-# ── Helpers ──────────────────────────────────────────────────
 
+# Fonctions utilitaires
 def _format_number(n):
     """Formate un nombre avec séparateur de milliers."""
     if n is None:
@@ -44,16 +45,11 @@ def _format_number(n):
     return f"{int(n):,}".replace(",", " ")
 
 
-def _add_logo_header(fig, year_label="2025 – 2026"):
+def _add_logo_header(fig, year_label="2025 – 2026"): # Année déterminée dans le main dynamiquement | fig: objet figure matplotlib 
     """Ajoute le bandeau d'en-tête avec logos et titre sur chaque page."""
-    # Bandeau bleu en haut (Rectangle pour être sûr du rendu)
     rect = mpatches.Rectangle((0, 0.91), 1, 0.09, facecolor=UA_BLUE, transform=fig.transFigure, zorder=0)
     fig.patches.append(rect)
 
-    # Logo SSU (supprimé à la demande de l'utilisateur)
-    pass
-
-    # Titre central
     fig.text(0.5, 0.96, "ACTIVITÉ SSU",
                 ha="center", va="center", fontsize=15, fontweight="bold",
                 color=WHITE, fontfamily="sans-serif")
@@ -64,8 +60,8 @@ def _add_logo_header(fig, year_label="2025 – 2026"):
 
 def _add_footer(fig, page_num, total_pages=5):
     """Ajoute le pied de page."""
-    footer = fig.add_axes([0, 0, 1, 0.025])
-    footer.set_xlim(0, 1)
+    footer = fig.add_axes([0, 0, 1, 0.025]) # axes en bas pour le footer 
+    footer.set_xlim(0, 1) # limites de l'axes 
     footer.set_ylim(0, 1)
     footer.set_facecolor(GREY_LIGHT)
     footer.axis("off")
@@ -74,7 +70,7 @@ def _add_footer(fig, page_num, total_pages=5):
 
 
 def _draw_kpi_card(ax, value, label, color=UA_BLUE, icon=""):
-    """Dessine une carte KPI stylisée dans un axes donné."""
+    """Dessine une carte KPI (indicateur clé) stylisée dans un axes donné."""
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis("off")
@@ -103,68 +99,14 @@ def _draw_kpi_card(ax, value, label, color=UA_BLUE, icon=""):
             fontfamily="sans-serif", wrap=True)
 
 
-def _draw_horizontal_bars(ax, data_dict, title="", max_items=7, colors=None):
-    """Dessine un bar chart horizontal stylisé."""
-    if colors is None:
-        colors = BAR_COLORS
-
-    if data_dict is None:
-        ax.axis("off")
-        return
-
-    # Handle if it's a dict or items list
-    items = list(data_dict.items()) if hasattr(data_dict, 'items') else []
-    items = items[:max_items]
-    
-    if not items:
-        ax.axis("off")
-        return
-
-    labels = [str(k) for k, _ in items]
-    values = []
-    for _, v in items:
-        try:
-            values.append(float(v) if v is not None else 0)
-        except (ValueError, TypeError):
-            values.append(0)
-
-    # Inverser pour afficher le plus grand en haut
-    labels = labels[::-1]
-    values = values[::-1]
-    bar_colors = [colors[i % len(colors)] for i in range(len(labels))][::-1]
-
-    y_pos = np.arange(len(labels))
-    max_val = max(values) if values and max(values) > 0 else 1
-    bars = ax.barh(y_pos, values, color=bar_colors, height=0.6, edgecolor="none")
-    ax.set_yticks(y_pos)
-    ax.set_yticklabels(labels, fontsize=7, color=TEXT_DARK, fontfamily="sans-serif")
-    ax.set_xlim(0, max_val * 1.15)
-
-    # Valeurs sur les barres
-    for bar, val in zip(bars, values):
-        ax.text(bar.get_width() + max_val * 0.02, bar.get_y() + bar.get_height() / 2,
-                _format_number(val), va="center", fontsize=7, fontweight="bold",
-                color=TEXT_DARK, fontfamily="sans-serif")
-
-    ax.set_title(title, fontsize=9, fontweight="bold", color=TEXT_DARK, pad=8,
-                 fontfamily="sans-serif", loc="left")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.spines["bottom"].set_color(GREY_LIGHT)
-    ax.spines["left"].set_visible(False)
-    ax.tick_params(axis="x", colors=TEXT_SECONDARY, labelsize=6)
-    ax.tick_params(axis="y", length=0)
-    ax.set_facecolor(WHITE)
-
-
 def _embed_chart_image(ax, chart_path, title=""):
     """Insère une image PNG de graphique existant dans un axes."""
     ax.set_title(title, fontsize=9, fontweight="bold", color=TEXT_DARK, pad=6,
                  fontfamily="sans-serif", loc="left")
     if chart_path and os.path.exists(chart_path):
         try:
-            img = mpimg.imread(chart_path)
-            ax.imshow(img, aspect="equal")
+            img = mpimg.imread(chart_path) # lecture de l'image
+            ax.imshow(img, aspect="equal") # insertion de l'image
         except Exception:
             ax.text(0.5, 0.5, "Erreur lecture\nimage", ha="center", va="center",
                     fontsize=9, color=TEXT_SECONDARY, style="italic")
@@ -184,8 +126,7 @@ def _section_title(fig, y, text, icon=""):
     line.axis("off")
 
 
-# ── Pages du PDF ─────────────────────────────────────────────
-
+# Pages du PDF
 def _page1_overview(pdf, data, charts_dir, year_label):
     """Page 1 : Vue d'ensemble & Démographie"""
     fig = plt.figure(figsize=(8.27, 11.69))  # A4

@@ -12,7 +12,7 @@ def plot_appels_par_mois(df):
     if not valid_cols:
         raise ValueError("Aucune colonne d'appels exploitable trouvée.")
 
-    latest_year = valid_cols[-1]
+    latest_year = valid_cols[-1] # on génère le graphique pour l'année la plus récente
 
     data = df[["mois", latest_year]].dropna()
 
@@ -25,7 +25,6 @@ def plot_appels_par_mois(df):
     plt.ylabel("Nombre d'appels")
     plt.xticks(rotation=45)
     
-    # Style premium
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     

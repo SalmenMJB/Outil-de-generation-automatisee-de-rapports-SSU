@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 
 from app.config.colors import SSU_PALETTE
@@ -40,7 +41,7 @@ def plot_consultations_par_centre(activite_stats):
     plt.close()
 
 
-def plot_top_motifs(activite_stats, activite_stats_n_1=None):
+def plot_top_motifs(activite_stats, activite_stats_n_1=None): # si activite_stats_n_1 n'est pas fourni, on ne fait pas la comparaison
     data_current = activite_stats["top_motifs"].head(10).sort_values(ascending=True)
     labels = data_current.index.astype(str)
     values_current = data_current.values
@@ -48,11 +49,10 @@ def plot_top_motifs(activite_stats, activite_stats_n_1=None):
     os.makedirs("output/charts", exist_ok=True)
     plt.figure(figsize=(9, 6))
 
-    if activite_stats_n_1 is not None and "top_motifs" in activite_stats_n_1:
+    if activite_stats_n_1 is not None and "top_motifs" in activite_stats_n_1: # si les 2 existent on compare
         data_n_1 = activite_stats_n_1["top_motifs"]
         values_n_1 = [data_n_1.get(label, 0) for label in labels]
 
-        import numpy as np
         x = np.arange(len(labels))
         width = 0.35
 
@@ -61,7 +61,7 @@ def plot_top_motifs(activite_stats, activite_stats_n_1=None):
 
         offset = max(max(values_current), max(values_n_1)) * 0.002 if max(max(values_current), max(values_n_1)) > 0 else 1
 
-        for bars in [bars1, bars2]:
+        for bars in [bars1, bars2]: # on ajoute les valeurs au dessus des barres
             for bar in bars:
                 height = bar.get_height()
                 if height > 0:
@@ -76,11 +76,12 @@ def plot_top_motifs(activite_stats, activite_stats_n_1=None):
 
         plt.xticks(x, labels, rotation=30, ha="right")
         plt.legend()
-    else:
+
+    else: # sinon on fait juste le graphique de l'année en cours
         bars = plt.bar(labels, values_current, color=SSU_PALETTE[0])
         offset = max(values_current) * 0.02 if len(values_current) > 0 else 1
 
-        for bar in bars:
+        for bar in bars: # on ajoute les valeurs au dessus des barres
             height = bar.get_height()
             plt.text(
                 bar.get_x() + bar.get_width() / 2,
@@ -105,7 +106,7 @@ def plot_top_motifs(activite_stats, activite_stats_n_1=None):
 
 
 def plot_repartition_sexe(activite_stats):
-    data = activite_stats["repartition_sexe"]
+    data = activite_stats["repartition_sexe"] 
     data = data[data.index.notna()]
     data = data.rename(index={"M" : "Hommes","F" : "Femmes"})
 
@@ -123,7 +124,7 @@ def plot_repartition_sexe(activite_stats):
             return f"{pct:.1f}%"
         return inner
 
-    plt.pie(
+    plt.pie( 
         values,
         labels=labels,
         autopct=autopct_format(values),

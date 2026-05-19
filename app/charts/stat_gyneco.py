@@ -1,22 +1,21 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import os
 from app.config.colors import SSU_PALETTE
 
-def plot_motifs_reels_css(indicators):
+def plot_motifs_reels_css(indicators): # css_stats du df_activite
     s = indicators["motifs_reels_css"].copy()
     
-    new_index = []
-    for idx in s.index:
+    new_index = [] # on renomme les intitulés des motifs
+    for idx in s.index: 
         idx_str = str(idx).strip().lower()
-        if idx_str in ["ist", "dépistage ist", "depistage ist"]:
+        if idx_str in ["ist", "dépistage ist", "depistage ist"]: # demandé par le SSU
             new_index.append("Dépistage IST")
         else:
             new_index.append(str(idx).capitalize())
             
     s.index = new_index
-    data = s.groupby(s.index).sum()
+    data = s.groupby(s.index).sum() # regroupe les motifs par intitulé et fait la somme des occurrences 
     data = data.sort_values(ascending=False).head(8)
     
 
@@ -39,7 +38,6 @@ def plot_motifs_reels_css(indicators):
     plt.title("Motifs réels des consultations CSS", pad=20, fontweight='bold', fontsize=15)
     plt.xlabel("Nombre de consultations")
     
-    # Style premium
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     
@@ -48,48 +46,48 @@ def plot_motifs_reels_css(indicators):
     plt.close()
 
 
-def plot_motifs_CSS(df):
+def plot_motifs_CSS(df): # df de stat_activite
     df_gyneco = df[df["motif"]=="Centre de planification"]
     df_medecine_gyneco = df[df["motif"]=="Consultations médecine générale"]
 
     nb_consultations = df_gyneco.shape[0]
     repartition = df_gyneco["sexe"].value_counts()
-    repartition = repartition.rename(index={"M" : "Hommes",
-                "F" : "Femmes"})
-    # print(repartition)
-    # print(nb_consultations)
-
+    repartition = repartition.rename(index={"M" : "Hommes", "F" : "Femmes"})
+    
+    # Ce mapping nous a été demandé par le SSU pour regrouper les motifs
     motifs = [(r'(?i).*contraception.*', "Contraception"),
-    (r'(?i).*(problème gyneco|problème gynéco|dysmenorrhée).*', "Problème gynéco ou sexuel (dont dysménorrhées)"),
-    (r'(?i).*IST.*', "Dépistage d'IST et IST"),
-    (r'(?i).*DIU.*', "Contrôle DIU"),
-    (r'(?i).*(examen|entretien|consultation).*', "Examen ou entretien/consultation"),
-    (r'(?i).*(PREP|aménagement|santé mentale|violence|grossesse|autre).*', "Autre (grossesses, violences...)")]
+              (r'(?i).*(problème gyneco|problème gynéco|dysmenorrhée).*', "Problème gynéco ou sexuel (dont dysménorrhées)"),
+              (r'(?i).*IST.*', "Dépistage d'IST et IST"),
+              (r'(?i).*DIU.*', "Contrôle DIU"),
+              (r'(?i).*(examen|entretien|consultation).*', "Examen ou entretien/consultation"),
+              (r'(?i).*(PREP|aménagement|santé mentale|violence|grossesse|autre).*', "Autre (grossesses, violences...)")
+             ]
 
     motifs_medecine = [(r'(?i).*contraception.*', "Contraception"),
-    (r'(?i).*(problème gyneco|problème gynéco).*', "Problème gynéco ou sexuel (dont dysménorrhées)"),
-    (r'(?i).*IST.*', "Dépistage d'IST et IST"),
-    (r'(?i).*grossesse.*', "Autre (grossesses, violences...)")]
+                       (r'(?i).*(problème gyneco|problème gynéco).*', "Problème gynéco ou sexuel (dont dysménorrhées)"),
+                       (r'(?i).*IST.*', "Dépistage d'IST et IST"),
+                       (r'(?i).*grossesse.*', "Autre (grossesses, violences...)")]
 
     resultats = []
     resultats_medecine = []
 
-    for regex,intitule in motifs:
+    # boucle pour regrouper les motifs du df_gyneco
+    for regex, intitule in motifs:
         nb_occurences = df_gyneco[df_gyneco["motif réels"].str.contains(regex,na=False)].shape[0]
-        resultats.append({"motif réels" : intitule,
-                            "Nombre par motif" : nb_occurences})
+        resultats.append({"motif réels" : intitule, "Nombre par motif" : nb_occurences})
 
+    # boucle pour regrouper les motifs du df medecine generale
     for regex,intitule in motifs_medecine:
         nb_occurences_medecine = df_medecine_gyneco[df_medecine_gyneco["motif réels"].str.contains(regex,na=False)].shape[0]
-        resultats_medecine.append({"motif réels" : intitule,
-                            "Nombre par motif" : nb_occurences_medecine})
+        resultats_medecine.append({"motif réels" : intitule, "Nombre par motif" : nb_occurences_medecine})
 
     df_gyneco = pd.DataFrame(resultats)
-    df_medecine_gyneco = pd.DataFrame(resultats_medecine)
+    df_medecine_gyneco = pd.DataFrame(resultats_medecine) 
 
     medecine_dict = dict(zip(df_medecine_gyneco["motif réels"], df_medecine_gyneco["Nombre par motif"]))
 
-    for index, row in df_gyneco.iterrows():
+    # si le motif de la colonne "motif réels" du df_gyneco est présent dans le df_medecine_gyneco, on ajoute le nombre d'occurences du df_medecine_gyneco au df_gyneco
+    for index, row in df_gyneco.iterrows(): 
         motif = row["motif réels"]
         if motif in medecine_dict:
             df_gyneco.at[index, "Nombre par motif"] += medecine_dict[motif]
@@ -98,6 +96,8 @@ def plot_motifs_CSS(df):
 
     somme = df_gyneco["Nombre par motif"].sum()
     pourcentages = []
+
+    # boucle pour calculer les pourcentages de chaque motif
     for val in df_gyneco["Nombre par motif"]:
         calcul = (val/somme)*100
         pourcentages.append(round(calcul,2))
@@ -181,12 +181,10 @@ def plot_motifs_CSS(df):
     
     plt.title("Répartition des motifs de consultation au CSS", pad=35, fontweight="bold", fontsize=15)
     plt.tight_layout()
-
-
     plt.savefig("output/charts/motifs_CSS.png", dpi=300, bbox_inches="tight")
     
 
-def plot_prescriptions_css(excel_path):
+def plot_prescriptions_css(excel_path): # stat_liste_css
     data = pd.read_excel(excel_path, sheet_name="Gynécologie")
     data.columns = [str(c).strip() for c in data.columns]
     
@@ -194,14 +192,14 @@ def plot_prescriptions_css(excel_path):
         data = pd.read_excel(excel_path, sheet_name="Gynécologie", header=1)
         data.columns = [str(c).strip() for c in data.columns]
 
-    # Filtrage
+    # Filtrage des données demandé par le SSU
     cibles = ["pilule", "implant", "anneau", "patch", "stérilet", "vaccins", "préservatif", "contraception d'urgence"]
     data_filtered = data[data["Sous catégorie"].str.lower().isin(cibles)].copy()
     data_filtered["Nombre"] = pd.to_numeric(data_filtered["Nombre"], errors='coerce').fillna(0)
     stats = data_filtered.groupby("Sous catégorie")["Nombre"].sum()
     stats = stats[stats > 0]
 
-    # Ordre amélioré (pour que les petites parts soient séparées par des grosses)
+    # Ordre amélioré
     ordre_voulu = ["Pilule", "Anneau", "Préservatif", "Patch", "Implant", "Contraception d'urgence", "Stérilet", "Vaccins"]
     final_keys = [k for item in ordre_voulu for k in stats.index if k.lower() == item.lower()]
     stats = stats.reindex(final_keys)
@@ -209,17 +207,15 @@ def plot_prescriptions_css(excel_path):
     if not stats.empty:
         fig, ax = plt.subplots(figsize=(10, 7), subplot_kw=dict(aspect="equal"))
         
-        # Couleurs
         couleurs = SSU_PALETTE[:len(stats)]
         
-        # Création du camembert
         wedges, _ = ax.pie(stats, colors=couleurs, startangle=140, 
                           wedgeprops=dict(edgecolor='white', linewidth=1.5))
 
         # Traits de liaison
         kw = dict(arrowprops=dict(arrowstyle="-", color="#777777", linewidth=1), zorder=0, va="center")
 
-        for i, p in enumerate(wedges):
+        for i, p in enumerate(wedges): # boucles pour tracer les traits de liaison entre les parts du camembert et leurs légendes correspondantes 
             ang = (p.theta2 - p.theta1)/2. + p.theta1
             y = np.sin(np.deg2rad(ang))
             x = np.cos(np.deg2rad(ang))

@@ -221,7 +221,7 @@ def compute_pssm_indicators(pssm_sheets):
     if "dates" in all_pssm.columns:
         all_pssm = all_pssm[all_pssm["dates"].notna()]
 
-    indicators["nombre_sessions"] = len(all_pssm)
+    indicators["nombre_sessions"] = len(all_pssm) 
 
     #  Pour les feuilles avant pssm 2025,26:
     for col in ["etudiants ua", "etudiants autres", "personnels ua", "personnels autres"]:

@@ -216,7 +216,7 @@ def main():
     print("Graphique généré : output/charts/actions_par_site_lisible.png")
     plot_actions_par_origine(df_actions)
     print("Graphique généré : output/charts/actions_par_origine.png")
-
+ 
 
     plot_pssm_sessions(pssm_stats)
     print("Graphique généré : output/charts/pssm_sessions.png")
@@ -323,7 +323,7 @@ def main():
         "prevention": actions_stats,
         "stats_standard": stats_stats
     }
-    
+    # Appeler la fonction de génération du PDF avec l'année en cours dynamique
     generate_dashboard_pdf(
         data=dashboard_data,
         charts_dir="output/charts",
